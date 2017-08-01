@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	MAX_SUPPORTED_REVISION = 915
+	MAX_SUPPORTED_REVISION = 921
 	MIN_SUPPORTED_REVISION = 910
 	GS_NO_ERRORS           = 0
 	GS_FATAL_ERROR         = C.e_Fatal
