@@ -9,6 +9,8 @@ package ghostscript
 #include <ghostscript/iapi.h>
 #include <ghostscript/ierrors.h>
 #cgo LDFLAGS: -lgs
+
+#define e_Fatal gs_error_Fatal
 */
 import "C"
 
@@ -19,10 +21,10 @@ import (
 )
 
 const (
-	MAX_SUPPORTED_REVISION = 921
+	MAX_SUPPORTED_REVISION = 922
 	MIN_SUPPORTED_REVISION = 910
 	GS_NO_ERRORS           = 0
-	GS_FATAL_ERROR         = -1
+	GS_FATAL_ERROR         = C.e_Fatal
 )
 
 var (
