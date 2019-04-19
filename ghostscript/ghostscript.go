@@ -52,25 +52,11 @@ type Ghostscript struct {
 // It will allocate a new string array of the appropriate length, and should
 // be garbage collected using FreeCStrings.
 func CStrings(goStrings []string) **C.char {
-	// Kids, don't try this at home. Absolutely nasty.
-	var char C.char
-	length := len(goStrings)
-	charArray := C.calloc(C.size_t(unsafe.Sizeof(&char)), C.size_t(length))
-	tmp := (*[1 << 30]*C.char)(unsafe.Pointer(charArray))[:length:length]
-	for i, str := range goStrings {
-		tmp[i] = C.CString(str)
+	c := make([]*C.char, len(goStrings))
+	for i := range goStrings {
+		c[i] = C.CString(goStrings[i])
 	}
-	return (**C.char)(charArray)
-}
-
-// FreeCStrings frees memory used to allocate a C array of char pointers.
-func FreeCStrings(cStrings **C.char, length int) {
-	// Yea, this is real nasty.
-	tmp := (*[1 << 30]*C.char)(unsafe.Pointer(cStrings))[:length:length]
-	for i, _ := range tmp {
-		C.free(unsafe.Pointer(tmp[i]))
-	}
-	C.free(unsafe.Pointer(cStrings))
+	return (**C.char)(unsafe.Pointer(&c[0]))
 }
 
 func instantiate() {
@@ -155,7 +141,7 @@ func (gs *Ghostscript) Destroy() {
 // from index 1.
 func (gs *Ghostscript) Init(args []string) error {
 	cArgs := CStrings(args)
-	defer FreeCStrings(cArgs, len(args))
+	//defer FreeCStrings(cArgs, len(args))
 
 	err := C.gsapi_init_with_args(gs.instance, C.int(len(args)), cArgs)
 	if err <= GS_FATAL_ERROR {
